@@ -7,24 +7,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-LOGGER = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "console": {"format": "%(name)-12s %(levelname)-8s %(message)s"},
-        "file": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"},
-    },
-    "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "console"},
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "formatter": "file",
-            "filename": f"{str(BASE_DIR)}/debug.log",
-        },
-    },
-    "loggers": {"": {"level": "DEBUG", "handlers": ["console", "file"]}},
-}
 
 # .env file reader
 load_dotenv()
@@ -41,15 +23,6 @@ SECRET_KEY = os.getenv("DJANGO_SECURE_KEY")
 DEBUG = bool(int(os.getenv("DJANGO_DEBUG")))
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", "*")]
-
-
-# Logging N+1 requests:
-NPLUSONE_RAISE = True  # comment out if you want to allow N+1 requests
-NPLUSONE_LOGGER = logging.getLogger("django")
-NPLUSONE_LOG_LEVEL = logging.WARN
-NPLUSONE_WHITELIST = [
-    {"model": "admin.*"},
-]
 
 # Application definition
 
