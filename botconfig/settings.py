@@ -27,6 +27,8 @@ ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", "*")]
 # Application definition
 
 LOCAL_APPS = [
+    'rest_framework',
+
     "bot",
     "users",
 ]
