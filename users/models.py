@@ -10,7 +10,7 @@ class BotUser(db.Model):
     phone = db.CharField("Phone number", max_length=12)
     date_joined = db.DateTimeField('Date joined', default=timezone.now)
     is_active = db.BooleanField("User is active?", default=True)
-    ban = db.BooleanField("Banned")
+    ban = db.BooleanField("Banned", default=False)
 
     def __str__(self) -> str:
         return str(self.user_id)
