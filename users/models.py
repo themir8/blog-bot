@@ -13,7 +13,7 @@ class BotUser(db.Model):
     ban = db.BooleanField("Banned", default=False)
 
     def __str__(self) -> str:
-        return str(self.user_id)
+        return str(self.username)
 
     class Meta:
         verbose_name = "User"

@@ -1,10 +1,11 @@
+from rest_framework.fields import ImageField
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import UpdateAPIView, GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
-from .models import Article, Blog
+from .models import Article, Blog, BlogSubscribers
 from users.models import BotUser
 from . import serializers
 
@@ -12,8 +13,7 @@ from . import serializers
 class UserCreateView(APIView):
 
     def get(self, request):
-        article = Article.objects.first()
-        serializer = serializers.UserCreateSerializer(article)
+        serializer = serializers.UserCreateSerializer()
         return Response(serializer.data)
 
     def post(self, request):
@@ -22,6 +22,63 @@ class UserCreateView(APIView):
             user.save()
         return Response(status=201)
 
+
+class GetBlogView(UpdateAPIView):
+    serializer_class = serializers.BlogGetSerializer
+
+    def get_queryset(self):
+        return Blog.objects.all()
+
+    def get(self, request, pk):
+        blog = Blog.objects.get(owner__user_id=pk)
+        serializer = serializers.BlogGetSerializer(blog)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+
+class CreateBlogView(APIView):
+
+    serializer_class = serializers.BlogCreateSerializer
+
+    def get(self, request):
+        serializer = serializers.BlogCreateSerializer()
+        return Response(serializer.data)
+
+    def post(self, request):
+        blog = serializers.BlogCreateSerializer(data=request.data)
+        owner = Blog.objects.get(owner__id=request.POST.get("owner"))
+        if owner:
+            data = {"detail": "У вас уже есть свой блог!"}
+            return Response(data, status=404)
+        else:
+            if blog.is_valid():
+                blog.save()
+            return Response(status=201)
+
+
+class CreateBlogSubscribersView(APIView):
+
+    def post(self, request):
+        blog = serializers.BlogSubscribersCreateSerializer(data=request.data)
+        if blog.is_valid():
+            blog.save()
+        return Response(status=201)
+
+
+class ArticleAPIView(GenericAPIView, UpdateModelMixin):
+
+    queryset = Article.objects.all()
+    serializer_class = serializers.ArticleGetSerializer
+
+    def get(self, request, pk):
+        article = Article.objects.get(id=pk)
+        serializer = serializers.ArticleGetSerializer(article)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 # class ArticleCreateView(APIView):
 #     permission_classes = [IsAuthenticated]
