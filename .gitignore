@@ -2,3 +2,4 @@ botpy/
 .vscode/
 toemoji/
 .env
+db/
