@@ -1,0 +1,8 @@
+version: "3.3"
+services:
+  app:
+    image: golang:1.16.5-alpine
+    volumes:
+      - .:/home/mirzohidov/Projects/blog-bot-bot/blog-bot
+    working_dir: /home/mirzohidov/Projects/blog-bot-bot/blog-bot
+    command: go run main.go
