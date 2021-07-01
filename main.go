@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/mirsaid-mirzohidov/blog-bot/bot"
+	"github.com/mirsaid-mirzohidov/blog-bot/bot/models"
 )
 
 // type Result struct {
@@ -10,5 +11,6 @@ import (
 // }
 
 func main() {
+	models.InitDB()
 	bot.Bot_run()
 }
