@@ -1,6 +1,7 @@
 from rest_framework.fields import ImageField
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.generics import UpdateAPIView, GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -17,10 +18,13 @@ class UserCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        user = serializers.UserCreateSerializer(data=request.data)
-        if user.is_valid():
-            user.save()
-        return Response(status=201)
+        try:
+            user = serializers.UserCreateSerializer(data=request.data)
+            if user.is_valid():
+                user.save()
+            return Response(status=201)
+        except:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class GetBlogView(UpdateAPIView):
@@ -30,9 +34,12 @@ class GetBlogView(UpdateAPIView):
         return Blog.objects.all()
 
     def get(self, request, pk):
-        blog = Blog.objects.get(owner__user_id=pk)
-        serializer = serializers.BlogGetSerializer(blog)
-        return Response(serializer.data)
+        try:
+            blog = Blog.objects.get(owner__user_id=pk)
+            serializer = serializers.BlogGetSerializer(blog)
+            return Response(serializer.data)
+        except:
+            return Response({'status': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
