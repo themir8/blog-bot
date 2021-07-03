@@ -3,7 +3,7 @@ from django.utils import timezone
 
 
 class BotUser(db.Model):
-    user_id = db.IntegerField("User telegram id", null=False, unique=True)
+    user_id = db.BigIntegerField("User telegram id", null=False, unique=True)
     username = db.CharField("Username", max_length=32, unique=True)
     first_name = db.CharField("First name", max_length=15, null=True)
     last_name = db.CharField("Last name", max_length=15, null=True)
