@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import (ArticleAPIView, CreateBlogSubscribersView, CreateBlogView,
+from .views import (ArticleGetAPIView, CreateBlogSubscribersView, CreateBlogView,
                     GetBlogView, UserCreateView)
 
 urlpatterns = [
@@ -8,5 +8,5 @@ urlpatterns = [
     path('blog-subscribe/', CreateBlogSubscribersView.as_view()),
     path('blog/', CreateBlogView.as_view()),
     path('blog/<int:pk>/', GetBlogView.as_view()),
-    path('article/<str:pk>/', ArticleAPIView.as_view()),
+    path('article/<str:pk>/', ArticleGetAPIView.as_view()),
 ]
