@@ -1,7 +1,11 @@
-import logging
-from aiogram import types
+import hashlib
 
-from bot.queries import create_user, get_article, get_blog
+from aiogram import types
+from aiogram.types import InlineQuery, \
+    InputTextMessageContent, InlineQueryResultArticle
+import loguru
+
+from bot.queries import create_user, get_all_articles, get_article, get_blog
 from bot.models import User
 from bot.buttons import main_btn, article_menu
 
@@ -30,6 +34,8 @@ async def text_handler(message: types.Message):
         for i, article in enumerate(blog.articles, 1):
             text += f"{str(i)}: {article.title}\n"
         await message.answer(text, reply_markup=article_menu(blog.articles))
+    elif message.text == "🔍 Поиск":
+        await message.answer("🔎 Просто отправьте боту любой текст.")
 
 
 async def article_handler(query: types.CallbackQuery):
@@ -38,4 +44,22 @@ async def article_handler(query: types.CallbackQuery):
         text = f"<b>{article.title}</b>\n\n{article.text}"
         await query.message.edit_text(text, parse_mode="html")
     except Exception as e:
-        logging.ERROR(e)
+        loguru.logger.error(e)
+
+
+async def inline_get_article(inline_query: InlineQuery):
+    articles = get_all_articles()
+    item = []
+    for article in articles:
+        if inline_query.query.lower() in article.title.lower():
+            text = f"{article.title}\n\n{article.text}"
+            input_content = InputTextMessageContent(text)
+            result_id: str = hashlib.md5(article.title.encode()).hexdigest()
+            item.append(InlineQueryResultArticle(
+                id=result_id,
+                title=f'Result {article.title!r}',
+                description=article.text,
+                input_message_content=input_content,
+            ))
+
+    await inline_query.answer(results=item, cache_time=300)
