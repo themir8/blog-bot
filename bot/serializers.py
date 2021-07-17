@@ -7,17 +7,10 @@ from users.models import BotUser
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BotUser
-        fields = ['user_id', 'username', 'first_name', 'last_name',
-                  'phone']
+        fields = ['user_id', 'username', 'first_name', 'last_name']
 
 
 class ArticleGetSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        slug_field="username", read_only=True)
-    category = serializers.SlugRelatedField(
-        slug_field="name", read_only=True)
-    blog = serializers.SlugRelatedField(
-        slug_field="name", read_only=True)
 
     class Meta:
         model = Article

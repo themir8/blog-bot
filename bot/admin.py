@@ -8,8 +8,6 @@ class BlogAdmin(admin.ModelAdmin):
     list_display = ('id', "name", "owner")
     list_display_links = ('id',)
     search_fields = ('owner', "name")
-    # readonly_fields = ('date_joined',)
-    # list_filter = ('date_joined', 'ban', 'is_active')
     save_as = True
 
 
@@ -23,13 +21,9 @@ class BlogSubscribersAdmin(admin.ModelAdmin):
     list_display = ('id', "subscriber", "blog")
     list_display_links = ('id',)
     search_fields = ('subscriber', "blog")
-    # readonly_fields = ('date_joined',)
-    # list_filter = ('date_joined', 'ban', 'is_active')
     save_as = True
 
 
 admin.site.register(Article)
 admin.site.register(Category)
 admin.site.register(ArticleView)
-# admin.site.register(Blog)
-# admin.site.register(BlogSubscribers)
