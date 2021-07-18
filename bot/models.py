@@ -43,6 +43,9 @@ class Blog(db.Model):
 
 
 class Article(db.Model):
+    """ Article model.
+    TODO:
+     - Add new field: views """
     id = db.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = db.CharField("Article title", max_length=80)
     text = db.TextField("Article body")
