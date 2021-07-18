@@ -34,7 +34,9 @@ async def main():
         # register search_function
         dp.register_message_handler(
             search_function, state=States.search)
+        # inline buttons handler
         dp.register_callback_query_handler(article_handler)
+        # inline mode handler
         dp.register_inline_handler(inline_get_article)
         await dp.start_polling()
     finally:
