@@ -29,3 +29,7 @@ def article_menu(articles: list[Article]) -> types.InlineKeyboardMarkup:
     menu.add(*buttons)
 
     return menu
+
+
+def back_btn() -> types.ReplyKeyboardMarkup:
+    return types.ReplyKeyboardMarkup(resize_keyboard=True).add("⬅️ Назад")
