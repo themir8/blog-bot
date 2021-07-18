@@ -1,13 +1,15 @@
+from bot.states import States
 import hashlib
 
 from aiogram import types
+from aiogram.dispatcher.storage import FSMContext
 from aiogram.types import InlineQuery, \
     InputTextMessageContent, InlineQueryResultArticle
 import loguru
 
 from bot.queries import create_user, get_all_articles, get_article, get_blog
 from bot.models import User
-from bot.buttons import main_btn, article_menu
+from bot.buttons import back_btn, main_btn, article_menu
 
 
 async def start_handler(message: types.Message):
@@ -35,7 +37,11 @@ async def text_handler(message: types.Message):
             text += f"{str(i)}: {article.title}\n"
         await message.answer(text, reply_markup=article_menu(blog.articles))
     elif message.text == "🔍 Поиск":
-        await message.answer("🔎 Просто отправьте боту любой текст.")
+        await States.search.set()
+        await message.answer("🔎 Просто отправьте боту любой текст.", reply_markup=back_btn())
+    elif message.text == "👤 Подписки":
+        await States.follows.set()
+        await message.answer("🔎 Просто отправьте боту любой текст.", reply_markup=back_btn())
 
 
 async def article_handler(query: types.CallbackQuery):
@@ -45,6 +51,20 @@ async def article_handler(query: types.CallbackQuery):
         await query.message.edit_text(text, parse_mode="html")
     except Exception as e:
         loguru.logger.error(e)
+
+
+async def search_function(message: types.Message, state: FSMContext):
+    articles = get_all_articles()
+    text = "<b>Результаты по вашему запросу:</b>\n\n"
+    if message.text == "⬅️ Назад":
+        await state.finish()
+        await message.answer("Hi!", reply_markup=main_btn("Мой блог"))
+        return
+    for article in articles:
+        if message.text.lower() in article.title.lower():
+            text += f"{article.title}\n"
+
+    await message.answer(text, parse_mode="html")
 
 
 async def inline_get_article(inline_query: InlineQuery):
