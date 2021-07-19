@@ -30,7 +30,6 @@ LOCAL_APPS = [
     'rest_framework',
 
     "bot",
-    "users",
 ]
 
 INSTALLED_APPS = [
