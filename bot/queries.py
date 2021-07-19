@@ -3,22 +3,33 @@ import dotenv
 
 import requests
 
-from .models import Article, User, Blog
+from .models import Article, Blog, UserCreate, UserGet
 
 
 dotenv.load_dotenv()
 BASE_URL = str(os.getenv("BASE_URL"))
 
 
-def create_user(user: User) -> int:
-    r = requests.post(BASE_URL+"/user/", data=user.dict())
+def create_user(user: UserCreate) -> int:
+    r = requests.post(BASE_URL+"/users/", data=user.dict())
     return r.status_code
 
 
-def get_blog(user_id: int) -> Blog:
+def get_user(user_id: int):
+    r = requests.get(BASE_URL+"/users/"+str(user_id))
+    user = UserGet(**r.json())
+    return user
+
+
+def get_blog(user_id: int) -> list[Blog]:
     r = requests.get(BASE_URL+"/blog/"+str(user_id))
-    blog = Blog(**r.json())
-    return blog
+    blogs = []
+    if len(r.json()) > 1:
+        for blog in r.json():
+            blogs.append(Blog(**blog))
+    else:
+        blogs.append(Blog(**r.json()[0]))
+    return blogs
 
 
 def get_article(article_id: str) -> Article:
