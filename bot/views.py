@@ -1,4 +1,3 @@
-from rest_framework.fields import ImageField
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -7,7 +6,7 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from .models import Article, Blog, BlogSubscribers
-from users.models import BotUser
+from bot.models import BotUser
 from . import serializers
 
 
@@ -30,6 +29,21 @@ class UserCreateView(APIView):
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+class UserGetAPIView(UpdateAPIView):
+    serializer_class = serializers.UserGetSerializer
+
+    def get_queryset(self):
+        return BotUser.objects.all()
+
+    def get(self, request, pk):
+        user = BotUser.objects.get(user_id=pk)
+        serializer = serializers.UserGetSerializer(user)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+
 class GetBlogView(UpdateAPIView):
     serializer_class = serializers.BlogGetSerializer
 
@@ -38,10 +52,11 @@ class GetBlogView(UpdateAPIView):
 
     def get(self, request, pk):
         try:
-            blog = Blog.objects.get(owner__user_id=pk)
-            serializer = serializers.BlogGetSerializer(blog)
+            blog = Blog.objects.filter(owner__user_id=pk)
+            serializer = serializers.BlogGetSerializer(blog, many=True)
             return Response(serializer.data)
-        except:
+        except Exception as e:
+            print(e)
             return Response({'status': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
@@ -80,11 +95,11 @@ class CreateBlogSubscribersView(APIView):
 class ArticleGetAPIView(GenericAPIView, UpdateModelMixin):
 
     queryset = Article.objects.all()
-    serializer_class = serializers.ArticleGetSerializer
+    serializer_class = serializers.ArticleSerializer
 
     def get(self, request, pk):
         article = Article.objects.get(id=pk)
-        serializer = serializers.ArticleGetSerializer(article)
+        serializer = serializers.ArticleSerializer(article)
         return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):
@@ -95,5 +110,5 @@ class ArticlesAPIView(APIView):
 
     def get(self, request):
         articles = Article.objects.all().order_by("-posted_date")
-        serializer = serializers.ArticleGetSerializer(articles, many=True)
+        serializer = serializers.ArticleSerializer(articles, many=True)
         return Response(serializer.data)
