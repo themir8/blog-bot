@@ -1,41 +1,17 @@
-from rest_framework import serializers
+from rest_framework import fields, serializers
 
 from bot.models import Article, Blog, BlogSubscribers
-from users.models import BotUser
+from bot.models import BotUser
 
 
-class UserCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BotUser
-        fields = ['user_id', 'username', 'first_name', 'last_name']
-
-
-class ArticleGetSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
         fields = "__all__"
 
 
-class ArticleCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Article
-        fields = "__all__"
-
-
-class BlogSubscribersGetSerializer(serializers.ModelSerializer):
-
-    subscriber = serializers.SlugRelatedField(
-        slug_field="username", read_only=True)
-    blog = serializers.SlugRelatedField(
-        slug_field="name", read_only=True)
-
-    class Meta:
-        model = BlogSubscribers
-        fields = "__all__"
-
-
-class BlogSubscribersCreateSerializer(serializers.ModelSerializer):
+class BlogSubscribersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogSubscribers
@@ -44,13 +20,10 @@ class BlogSubscribersCreateSerializer(serializers.ModelSerializer):
 
 class BlogGetSerializer(serializers.ModelSerializer):
 
-    owner = serializers.SlugRelatedField(
-        slug_field="username", read_only=True)
-    category = serializers.SlugRelatedField(
-        slug_field="name", read_only=True, many=True)
-    blogsubscribers = BlogSubscribersGetSerializer(
+    blogsubscribers = BlogSubscribersSerializer(
         source='blogsubscribers_set', many=True, read_only=True)
-    articles = ArticleGetSerializer(
+    # blogsubscribers = fields.IntegerField
+    articles = ArticleSerializer(
         source='article_set', many=True, read_only=True)
 
     class Meta:
@@ -64,9 +37,19 @@ class BlogCreateSerializer(serializers.ModelSerializer):
         model = Blog
         fields = "__all__"
 
-# end
 
-# class GroupArticlesSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Group
-#         fields = ['name', 'description', 'author', 'articles', 'private', 'slug', 'created_date']
+class UserCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BotUser
+        fields = ['user_id', 'username', 'first_name',
+                  'last_name']
+
+
+class UserGetSerializer(serializers.ModelSerializer):
+
+    follows = BlogSubscribersSerializer()
+
+    class Meta:
+        model = BotUser
+        fields = "__all__"
