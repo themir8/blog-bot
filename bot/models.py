@@ -4,7 +4,26 @@ from django.contrib.auth import get_user_model
 from django.db import models as db
 from django.utils import timezone
 
-from users.models import BotUser
+
+class BotUser(db.Model):
+    user_id = db.BigIntegerField("User telegram id", null=False, unique=True)
+    username = db.CharField("Username", max_length=32, unique=True)
+    first_name = db.CharField("First name", max_length=15, null=True)
+    last_name = db.CharField("Last name", max_length=15, null=True)
+    date_joined = db.DateTimeField('Date joined', default=timezone.now)
+    is_active = db.BooleanField("User is active?", default=True)
+    ban = db.BooleanField("Banned", default=False)
+
+    def __str__(self) -> str:
+        return str(self.username)
+
+    @property
+    def follows(self):
+        return BlogSubscribers.objects.get(subscriber__id=self.id)
+
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users registered in the bot"
 
 
 class Category(db.Model):
@@ -69,13 +88,12 @@ class Article(db.Model):
 
 
 class BlogSubscribers(db.Model):
-    subscriber = db.OneToOneField(BotUser, verbose_name="Blog subscriber", related_name="blogsubscribers",
-                                  on_delete=db.CASCADE, null=True, unique=True)
-    blog = db.ForeignKey(Blog, verbose_name="Blog",
-                         on_delete=db.CASCADE, null=True)
+    subscriber = db.OneToOneField(BotUser, verbose_name="Blog subscriber",
+                                  on_delete=db.CASCADE, null=True)
+    blog = db.ManyToManyField(Blog, verbose_name="Blog")
 
     def __str__(self) -> str:
-        return self.blog.name
+        return self.subscriber.username
 
     class Meta:
         verbose_name = "Subscriber"
