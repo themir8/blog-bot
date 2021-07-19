@@ -7,8 +7,8 @@ from aiogram.types import InlineQuery, \
     InputTextMessageContent, InlineQueryResultArticle
 import loguru
 
-from bot.queries import create_user, get_all_articles, get_article, get_blog
-from bot.models import User
+from bot.queries import create_user, get_all_articles, get_article, get_blog, get_user
+from bot.models import UserCreate
 from bot.buttons import back_btn, main_btn, article_menu
 
 
@@ -22,7 +22,7 @@ async def start_handler(message: types.Message):
         "first_name": message.from_user.first_name,
         "last_name": message.from_user.last_name,
     }
-    user = User(**input_json)
+    user = UserCreate(**input_json)
     create_user(user)
     await message.answer("Hi!", reply_markup=main_btn("Мой блог"))
 
@@ -31,17 +31,21 @@ async def text_handler(message: types.Message):
     """Text message handler"""
 
     if message.text == "Мой блог":
-        blog = get_blog(message.from_user.id)
-        text = "Список ваших статей:\n\n"
-        for i, article in enumerate(blog.articles, 1):
-            text += f"{str(i)}: {article.title}\n"
-        await message.answer(text, reply_markup=article_menu(blog.articles))
+        blogs = get_blog(message.from_user.id)
+        if len(blogs) >= 1:
+            for blog in blogs:
+                text = "Список ваших статей:\n\n"
+                for i, article in enumerate(blog.articles, 1):
+                    text += f"{str(i)}: {article.title}\n"
+                await message.answer(text, reply_markup=article_menu(blog.articles))
     elif message.text == "🔍 Поиск":
         await States.search.set()
         await message.answer("🔎 Просто отправьте боту любой текст.", reply_markup=back_btn())
     elif message.text == "👤 Подписки":
         await States.follows.set()
-        await message.answer("🔎 Просто отправьте боту любой текст.", reply_markup=back_btn())
+        user = get_user(message.from_user.id)
+        text = f"📜 Ты подписан на {len(user.follows.blog)} блогов"
+        await message.answer(text, reply_markup=back_btn())
 
 
 async def article_handler(query: types.CallbackQuery):
