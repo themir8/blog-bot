@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class User(BaseModel):
+class UserCreate(BaseModel):
     user_id: int
     username: str
     first_name: str
@@ -10,14 +10,23 @@ class User(BaseModel):
 
 class BlogSubscriber(BaseModel):
     id: int
-    subscriber: str
-    blog: str
+    subscriber: int
+    blog: list[str]
+
+
+class UserGet(BaseModel):
+    id: int
+    follows: BlogSubscriber
+    user_id: int
+    username: str
+    first_name: str
+    last_name: str
 
 
 class Article(BaseModel):
     id: str
-    author: str
-    category: str
+    author: int
+    category: int
     blog: str
     title: str
     text: str
@@ -28,8 +37,8 @@ class Article(BaseModel):
 
 class Blog(BaseModel):
     id: str
-    owner: str
-    category: list[str]
+    owner: int
+    category: list[int]
     blogsubscribers: list[BlogSubscriber]
     articles: list[Article]
     name: str
