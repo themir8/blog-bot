@@ -21,6 +21,10 @@ class BotUser(db.Model):
     def follows(self):
         return BlogSubscribers.objects.get(subscriber__id=self.id)
 
+    @property
+    def blogs(self):
+        return Blog.objects.filter(owner__id=self.id)
+
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users registered in the bot"
