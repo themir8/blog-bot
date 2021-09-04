@@ -49,6 +49,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserGetSerializer(serializers.ModelSerializer):
 
     follows = BlogSubscribersSerializer()
+    blogs = BlogCreateSerializer(many=True)
 
     class Meta:
         model = BotUser
