@@ -1,7 +1,7 @@
 [![Forks][forks-shield]][forks-url] [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 <a href="http://www.djangoproject.com/"><img src="https://www.djangoproject.com/m/img/badges/djangoproject120x25.gif" border="0" alt="A Django project." title="A Django project." height="28" /></a>
-<a href="http://www.djangoproject.com/"><img src="https://img.shields.io/badge/Golang-1.16.7-blue?style=for-the-badge" border="0" alt="A Django project." title="A Django project." height="28" /></a>
+<a href="https://golang.org/"><img src="https://img.shields.io/badge/Golang-1.16.7-blue?style=for-the-badge" border="0" alt="A Django project." title="A Django project." height="28" /></a>
 
 <!-- PROJECT LOGO -->
 <br />
