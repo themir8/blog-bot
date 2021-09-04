@@ -52,8 +52,8 @@ class GetBlogView(UpdateAPIView):
 
     def get(self, request, pk):
         try:
-            blog = Blog.objects.filter(owner__user_id=pk)
-            serializer = serializers.BlogGetSerializer(blog, many=True)
+            blog = Blog.objects.get(owner__user_id=pk)
+            serializer = serializers.BlogGetSerializer(blog)
             return Response(serializer.data)
         except Exception as e:
             print(e)
@@ -99,7 +99,7 @@ class ArticleGetAPIView(GenericAPIView, UpdateModelMixin):
 
     def get(self, request, pk):
         article = Article.objects.get(id=pk)
-        serializer = serializers.ArticleSerializer(article)
+        serializer = serializers.ArticleSerializer(article, many=True)
         return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):
